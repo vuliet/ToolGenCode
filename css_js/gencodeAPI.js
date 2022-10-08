@@ -2,11 +2,21 @@
 var ListField = [];   //Mảng các cột của bảng dùng để Gen Code
 var ProjectName = $('#ProjectName').val(); //Tên của project sẽ dùng để Gen Code và tạo ra file
 var Screen = $('#ScreenName').val();  //Tên của màn hình sẽ dùng để Gen Code và tạo ra file
+var toLowerCaseScreen = lowercaseFirstLetter(Screen);
+var isAdminAPI = $('#adminApi').val();
+var baseClassName = isAdminAPI === 'true' ? 'BaseAdmController' : 'BaseController';
+var urlRootAPI = isAdminAPI === 'true' ? '/admin-api' : '/api';
+var admStr = isAdminAPI === 'true' ? 'adm' : '';
 
 /*-- Hàm RegEx để cắt và lấy ra các trường --*/
 function GetFields() {
     ProjectName = $('#ProjectName').val(); 
     Screen = $('#ScreenName').val();
+    toLowerCaseScreen = lowercaseFirstLetter(Screen);
+    isAdminAPI = $('#adminApi').val();
+    baseClassName = isAdminAPI === 'true' ? 'BaseAdmController' : 'BaseController';
+    urlRootAPI = isAdminAPI === 'true' ? '/admin-api' : '/api';
+    admStr = isAdminAPI === 'true' ? 'Adm' : '';
     ListField = [];
     const regex = /public .* (\w+) { get; set; }/g;
     var str= $("#InputModel").val(); //Chuỗi Model dùng để cắt các trường, được lấy từ một html input tự nhập.
@@ -29,7 +39,7 @@ function Preview() {
     /*-- Bắt đầu ghép chuỗi từ 2 thông tin là TÊN BẢNG (ScreenName) và DANH SÁCH CÁC CỘT (ListField) --*/
     $("#resultController").text(GenCode_Controller());
     $("#resultIService").text(GenCode_IService());
-    //$("#resultInterface").text(GenCode_Interface());
+    $("#resultService").text(GenCode_Service());
     //$("#resultView_Index").text(GenCode_View_Index());
     //$("#resultView_Detail").text(GenCode_View_Detail());
         
@@ -52,19 +62,20 @@ function GenCode_Controller(){
                         '\n' +
                         'namespace ' + ProjectName +'.Controllers\n' +
                         '{\n' +
-                        '    public class ' + Screen + 'Controller : BaseController\n' +
+                        '    [Route("'+ urlRootAPI +'/v1/'+ toLowerCaseScreen +'")]\n' +
+                        '    public class '+ Screen +''+ admStr +'Controller : '+ baseClassName +'\n' +
                         '    {\n' +
-                        '         private readonly I' + Screen + 'Service _' + lowercaseFirstLetter(Screen) + 'Service;\n' +
+                        '         private readonly I' + Screen + 'Service _' + toLowerCaseScreen + 'Service;\n' +
                         '\n' +
-                        '         public ' + Screen + 'Controller(I' + Screen + 'Service ' + lowercaseFirstLetter(Screen) + 'Service)\n' +
+                        '         public ' + Screen +''+ admStr +'Controller(I' + Screen + 'Service ' + toLowerCaseScreen + 'Service)\n' +
                         '         {\n' +
-                        '            _' + lowercaseFirstLetter(Screen) + 'Service = ' + lowercaseFirstLetter(Screen) + 'Service;\n' +
+                        '            _' + toLowerCaseScreen + 'Service = ' + toLowerCaseScreen + 'Service;\n' +
                         '         }\n' +
                         '\n' +
-                        '         [HttpGet("mydata")]\n' +
-                        '         public async Task<OkResponse> GetMyDatas()\n' +
+                        '         [HttpGet("list")]\n' +
+                        '         public async Task<OkResponse> Get' + Screen + 's()\n' +
                         '         {\n' +
-                        '           ' + ' var result = _I' + lowercaseFirstLetter(Screen) + 'Service.GetMyDatas();\n' +
+                        '           ' + ' var result = _' + toLowerCaseScreen + 'Service.Get' + Screen + 's(CurrentUser());\n' +
                         '            return new OkResponse();\n' +
                         '         }\n' +
                         '    }\n' +
@@ -74,39 +85,50 @@ function GenCode_Controller(){
 }
 
 function GenCode_IService() {
-    var strRepository = 'using System;\n' +
+    var strIService = 'using System;\n' +
                         'using System.Threading.Tasks;\n' +
                         'using System.Collections.Generic;\n' +
                         '\n' +
-                        'namespace ' + ProjectName +'.Controllers\n' +
+                        'namespace ' + ProjectName +'.Service.Interface\n' +
                         '{\n'+
                         '     public interface ' + 'I' + Screen + 'Service\n' +
                         '     {\n' +
-                        '       ' + ' Task\n' +
+                        '       ' + ' Task<List<'+ Screen +'Dto>> Get' + Screen + 's(AppUser appUser);\n' +
                         '     }\n' +
                         '}\n'; +
                         '\n';
-    return strRepository;
+    return strIService;
 }
 
 function GenCode_Service(){
-    var strInterface =  ' using System;\n '+
-                        ' using System.Collections.Generic;\n '+
-                        ' using ExampleStore.Models;\n '+
-                        ' \n '+
-                        ' namespace ExampleStore.DAL\n '+
-                        ' {\n '+
-                        '     public interface I' + Screen + 'Repository : IDisposable\n '+
-                        '     {\n '+
-                        '         IEnumerable<' + Screen + '> Get' + Screen + 's();\n '+
-                        '         ' + Screen + ' Get' + Screen + 'ByID(int ' + Screen + 'Id);        \n '+
-                        '         void Insert' + Screen + '(' + Screen + ' ' + Screen + ');        \n '+
-                        '         void Delete' + Screen + '(int ' + Screen + 'ID);\n '+
-                        '         void Update' + Screen + '(' + Screen + ' ' + Screen + ');\n '+
-                        '         void Save();        \n '+
-                        '     }\n '+
-                        ' }\n ';
-    return strInterface;
+    var strService =  'using System;\n' +
+                        'using System.Collections.Generic;\n' +
+                        'using System.Linq;\n' +
+                        '\n' +
+                        'namespace ' + ProjectName +'.Service.Implement\n' +
+                        '{\n' +
+                        '     public class ' + Screen + 'Service : I'+ Screen + 'Service\n' +
+                        '     {\n' +
+                        '          private readonly LogManager _logManager;\n' +
+                        '\n' +
+                        '          public ' + Screen + 'Service(LogManager logManager)\n' +
+                        '          {\n' +
+                        '              _logManager = logManager;\n' +
+                        '          }\n' +
+                        '\n' +
+                        '          public async Task<List<'+ Screen +'Dto>> Get' + Screen + 's(AppUser appUser)\n' +
+                        '          {\n' +
+                        '              await using var dbConnection = new MySqlConnection(Configurations.DbConnectionString);\n' +
+                        '              await dbConnection.OpenAsync();\n' +
+                        '\n' +
+                        '              var '+ Screen +'Dtos = (await dbConnection.QueryAsync<'+ Screen +'Dto>(\n' +
+                        '               @"SELECT * FROM '+ Screen +'s", new {})).ToList();\n' +
+                        '\n' +
+                        '               return '+ Screen +'Dtos;\n' +
+                        '          }\n' +
+                        '     }\n' +
+                        '}\n';
+    return strService;
 }
 
 function DownloadAll() {
@@ -117,17 +139,17 @@ function DownloadAll() {
         download(Screen + 'Controller.cs', GenCode_Controller());  //Chỗ này ta tạo 1 file có đuôi là ".cs"
     }, 1000);
     setTimeout(() => {
-        download(Screen + 'Repository.cs', GenCode_Repository());
+        download(Screen + 'IService.cs', GenCode_IService());
     }, 2000);
     setTimeout(() => {
-        download('I'+Screen + 'Repository.cs', GenCode_Interface());
+        download('I'+Screen + 'Service.cs', GenCode_Service());
     }, 3000);
-    setTimeout(() => {
-        download('Index.cshtml', GenCode_View_Index());    //Chỗ này ta tạo 1 file có đuôi là ".cshtml".
-    }, 4000);
-    setTimeout(() => {
-        download('Detail.cshtml', GenCode_View_Detail());
-    }, 5000);
+    // setTimeout(() => {
+    //     download('Index.cshtml', GenCode_View_Index());    //Chỗ này ta tạo 1 file có đuôi là ".cshtml".
+    // }, 4000);
+    // setTimeout(() => {
+    //     download('Detail.cshtml', GenCode_View_Detail());
+    // }, 5000);
 }
 
 /*-- Hàm thực thi việc tạo file (có đuôi file luôn) và download file về từ trình duyệt --*/
