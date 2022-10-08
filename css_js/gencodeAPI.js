@@ -40,8 +40,6 @@ function Preview() {
     $("#resultController").text(GenCode_Controller());
     $("#resultIService").text(GenCode_IService());
     $("#resultService").text(GenCode_Service());
-    //$("#resultView_Index").text(GenCode_View_Index());
-    //$("#resultView_Detail").text(GenCode_View_Detail());
         
     /*---Hiển thị màu của các đoạn code đã lấy được---*/
     $('pre code').each(function (i, block) {
@@ -214,12 +212,6 @@ function DownloadAll() {
     setTimeout(() => {
         download('I'+Screen + 'Service.cs', GenCode_Service());
     }, 3000);
-    // setTimeout(() => {
-    //     download('Index.cshtml', GenCode_View_Index());    //Chỗ này ta tạo 1 file có đuôi là ".cshtml".
-    // }, 4000);
-    // setTimeout(() => {
-    //     download('Detail.cshtml', GenCode_View_Detail());
-    // }, 5000);
 }
 
 /*-- Hàm thực thi việc tạo file (có đuôi file luôn) và download file về từ trình duyệt --*/
