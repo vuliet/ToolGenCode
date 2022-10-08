@@ -1,0 +1,69 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>TOOL GEN CODE TỰ ĐỘNG v1.0 MVC</title>
+
+    <!--Sử dụng Bootstrap và Jquery để thao tác với input html-->
+    <link rel="stylesheet" href="css_js/bootstrap.min.css">
+    <script src="css_js/jquery.min.js"></script>
+    <script src="css_js/bootstrap.min.js"></script>
+
+    <!--Sử dụng hightlight.js để format code có màu cho đẹp-->
+    <link rel="stylesheet" href="css_js/vs.min.css">
+    <script src="css_js/highlight.min.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script>
+</head>
+
+<body>
+    <!--Dùng Bootstrap tạo Panel cho dễ nhìn-->
+    <div class="panel panel-default">
+        <div class="panel-heading">TOOL GEN CODE TỰ ĐỘNG v1.0</div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label>Nhập tên màn hình</label>
+                <input id="ScreenName" style="width:100%;" value="Product"/> 
+            </div>
+            <div class="form-group">
+                <label>Nhập các trường (Data Model)</label>
+                <textarea id="InputModel" rows="8" style="width:100%;">
+public string Author { get; set; }
+public ImageItem AvatarImage { get; set; }
+public DateTime DateFrom { get; set; }
+public DateTime DateTo { get; set; }
+public string Description { get; set; }
+public bool DisplayHome { get; set; }
+public string ShortDescription { get; set; }
+public IEnumerable<string> Tag { get; set; }
+public string Title { get; set; }
+public string UrlEvent { get; set; }
+public DateTime PublishDate { get; set; }
+                </textarea>
+            </div>
+            <button class="btn btn-primary" onclick="Preview()">Xem Trước</button>
+            <button class="btn btn-info" onclick="DownloadAll()">Download về</button>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Kết quả sau khi Gen Code</div>
+        <div class="panel-body">
+            <!--Ở đây có dùng highlight.js để hiển thị code gen ra có màu mè cho đẹp và dễ nhìn-->
+            <label>GenCode_Controller</label>
+            <pre><code class="csharp" id="resultController"></code></pre>
+            <label>GenCode_Repository</label>
+            <pre><code class="csharp" id="resultRepository"></code></pre>
+            <label>GenCode_Interface</label>
+            <pre><code class="csharp" id="resultInterface"></code></pre>
+            <label>GenCode_View_Index</label>
+            <pre><code class="csharp" id="resultView_Index"></code></pre>
+            <label>GenCode_View_Detail</label>
+            <pre><code class="csharp" id="resultView_Detail"></code></pre> 
+        </div>
+    </div>
+
+    <script src="css_js/gencodeMVC.js"></script>
+</body>
+</html>
