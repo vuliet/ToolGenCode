@@ -41,17 +41,10 @@
             <div class="form-group">
                 <label>Nhập các trường (Data Model)</label>
                 <textarea id="InputModel" rows="8" style="width:100%;">
-public string Author { get; set; }
-public ImageItem AvatarImage { get; set; }
-public DateTime DateFrom { get; set; }
-public DateTime DateTo { get; set; }
-public string Description { get; set; }
-public bool DisplayHome { get; set; }
-public string ShortDescription { get; set; }
-public IEnumerable<string> Tag { get; set; }
-public string Title { get; set; }
-public string UrlEvent { get; set; }
-public DateTime PublishDate { get; set; }
+public int Id { get; set; }
+public long UserId { get; set; }
+public string Address { get; set; }
+public bool IsActive { get; set; }
                 </textarea>
             </div>
             <button class="btn btn-primary" onclick="Preview()">Xem Trước</button>

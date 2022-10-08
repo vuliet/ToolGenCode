@@ -264,3 +264,8 @@ function download(filename, text, name) {
             link.click();
         }
 }
+
+// Viết thường chữ cái đầu
+function lowercaseFirstLetter(string) {
+    return string.charAt(0).toLowerCase() + string.slice(1);
+}
