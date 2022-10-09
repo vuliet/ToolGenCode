@@ -86,6 +86,8 @@ function GenCode_IService() {
     var strIService = 'using System;\n' +
                         'using System.Threading.Tasks;\n' +
                         'using System.Collections.Generic;\n' +
+                        'using app.Core.Models;\n' +
+                        'using app.Core.Utils;\n' +
                         '\n' +
                         'namespace ' + ProjectName +'.Service.Interface\n' +
                         '{\n'+
@@ -105,6 +107,8 @@ function GenCode_Service(){
     var strService =  'using System;\n' +
                         'using System.Collections.Generic;\n' +
                         'using System.Linq;\n' +
+                        'using app.Core.Models;\n' +
+                        'using app.Core.Utils;\n' +
                         '\n' +
                         'namespace ' + ProjectName +'.Service.Implement\n' +
                         '{\n' +
