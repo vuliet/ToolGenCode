@@ -84,122 +84,123 @@ function GenCode_Controller(){
 
 function GenCode_IService() {
     var strIService = 'using System;\n' +
-                        'using System.Threading.Tasks;\n' +
-                        'using System.Collections.Generic;\n' +
-                        'using app.Core.Models;\n' +
-                        'using app.Core.Utils;\n' +
-                        '\n' +
-                        'namespace ' + ProjectName +'.Service.Interface\n' +
-                        '{\n'+
-                        '     public interface ' + 'I' + Screen + 'Service\n' +
-                        '     {\n' +
-                        '       ' + ' Task<List<'+ Screen +'Dto>> Get' + Screen + 's(AppUser appUser);\n' +
-                        '       ' + ' Task<TableResult<'+ Screen +'Dto>> AdmGet' + Screen + 's(TableRequest request);\n' +
-                        '       ' + ' Task AdmImport' + Screen + 's(List<'+ Screen +'Dto> requests, AppUser appUser);\n' +
-                        '       ' + ' Task AdmCreate' + Screen + '('+ Screen +'Dto request, AppUser appUser);\n' +
-                        '       ' + ' Task AdmUpdate' + Screen + '('+ Screen +'Dto request, AppUser appUser);\n' +
-                        '     }\n' +
-                        '\n';
+                      'using System.Threading.Tasks;\n' +
+                      'using System.Collections.Generic;\n' +
+                      'using app.Core.Models;\n' +
+                      'using app.Core.Utils;\n' +
+                      '\n' +
+                      'namespace ' + ProjectName +'.Service.Interface\n' +
+                      '{\n'+
+                      '     public interface ' + 'I' + Screen + 'Service\n' +
+                      '     {\n' +
+                      '       ' + ' Task<List<'+ Screen +'Dto>> Get' + Screen + 's(AppUser appUser);\n' +
+                      '       ' + ' Task<TableResult<'+ Screen +'Dto>> AdmGet' + Screen + 's(TableRequest request);\n' +
+                      '       ' + ' Task AdmImport' + Screen + 's(List<'+ Screen +'Dto> requests, AppUser appUser);\n' +
+                      '       ' + ' Task AdmCreate' + Screen + '('+ Screen +'Dto request, AppUser appUser);\n' +
+                      '       ' + ' Task AdmUpdate' + Screen + '('+ Screen +'Dto request, AppUser appUser);\n' +
+                      '     }\n' +
+                      '\n';
     return strIService;
 }
 
 function GenCode_Service(){
     var strService =  'using System;\n' +
-                        'using System.Collections.Generic;\n' +
-                        'using System.Linq;\n' +
-                        'using app.Core.Models;\n' +
-                        'using app.Core.Utils;\n' +
-                        '\n' +
-                        'namespace ' + ProjectName +'.Service.Implement\n' +
-                        '{\n' +
-                        '     public class ' + Screen + 'Service : I'+ Screen + 'Service\n' +
-                        '     {\n' +
-                        '          private readonly LogManager _logManager;\n' +
-                        '\n' +
-                        '          public ' + Screen + 'Service(LogManager logManager)\n' +
-                        '          {\n' +
-                        '              _logManager = logManager;\n' +
-                        '          }\n' +
-                        '\n' +
-                        '          public async Task<List<'+ Screen +'Dto>> Get' + Screen + 's(AppUser appUser)\n' +
-                        '          {\n' +
-                        '              await using var dbConnection = new MySqlConnection(Configurations.DbConnectionString);\n' +
-                        '              await dbConnection.OpenAsync();\n' +
-                        '\n' +
-                        '              var '+ Screen +'Dtos = (await dbConnection.QueryAsync<'+ Screen +'Dto>(\n' +
-                        '               @"SELECT * FROM '+ Screen +'s", new {})).ToList();\n' +
-                        '\n' +
-                        '               return '+ Screen +'Dtos;\n' +
-                        '          }\n' +
-                        '\n' +
-                        '          public async Task<TableResult<'+ Screen +'Dto>> AdmGet'+ Screen +'s(TableRequest request)\n' +
-                        '          {\n' +
-                        '              var builder = new SqlBuilder();\n' +
-                        '\n' +
-                        '              var (counter, selector) = builder.Build(typeof('+ Screen +'Dto), "'+ Screen +'s", request,\n' +
-                        '              new Dictionary<string, string>\n' +
-                        '              {\n' +
-                        '                 {"Id", "long"}\n' +
-                        '              }, null,\n' +
-                        '              new[] { "Id" });\n' +
-                        '\n' +
-                        '              await using var dbConnection = new MySqlConnection(Configurations.DbConnectionString);\n' +
-                        '              await dbConnection.OpenAsync();\n' +
-                        '\n' +
-                        '              var total = await dbConnection.ExecuteScalarAsync<int>(\n' +
-                        '                  counter.RawSql, counter.Parameters);\n' +
-                        '\n' +
-                        '              var items = (await dbConnection.QueryAsync<'+ Screen +'Dto>(\n' +
-                        '                  selector.RawSql, selector.Parameters)).ToList();\n' +
-                        '\n' +
-                        '              return new TableResult<'+ Screen +'Dto>(items, total, request);\n' +
-                        '          }\n' +
-                        '\n' +
-                        '          public async AdmImport' + Screen + 's(List<'+ Screen +'Dto> requests, AppUser appUser)\n' +
-                        '          {\n' +
-                        '              foreach (var request in requests)\n' +
-                        '              {\n' +
-                        '                  await AdmCreate' + Screen + '(request, appUser)\n' +
-                        '              }\n' +
-                        '          }\n' +
-                        '\n' +
-                        '          public async AdmCreate' + Screen + '('+ Screen +'Dto request, AppUser appUser)\n' +
-                        '          {\n' +
-                        '              await using var dbConnection = new MySqlConnection(Configurations.DbConnectionString);\n' +
-                        '              await dbConnection.OpenAsync();\n' +
-                        '\n' +
-                        '              request.CreatedTime = AppUtils.NowMilis();\n' +
-                        '              var exec = await dbConnection.ExecuteAsync(\n' +
-                        '                  @"INSERT INTO '+ Screen +'s(`CreatedTime`)\n' +
-                        '                  VALUES(@CreatedTime)", request);\n' +
-                        '              if (exec != 1)\n' +
-                        '              {\n' +
-                        '                  Log.Error($"create record '+ Screen +' fail={JsonConvert.SerializeObject(request)}");\n' +
-                        '                  continue;\n' +
-                        '              }\n' +
-                        '\n' +
-                        '              await _logManager.LogAdmin(appUser.Id, "create data '+ Screen +'","");\n' +
-                        '          }\n' +
-                        '\n' +
-                        '          public async AdmUpdate' + Screen + '('+ Screen +'Dto request, AppUser appUser)\n' +
-                        '          {\n' +
-                        '              await using var dbConnection = new MySqlConnection(Configurations.DbConnectionString);\n' +
-                        '              await dbConnection.OpenAsync();\n' +
-                        '\n' +
-                        '              request.UpdatedTime = AppUtils.NowMilis();\n' +
-                        '              var exec = await dbConnection.ExecuteAsync(\n' +
-                        '                  @"UPDATE '+ Screen +'s()\n' +
-                        '                  SET UpdatedTime = @UpdatedTime WHERE Id = @Id", request);\n' +
-                        '              if (exec != 1)\n' +
-                        '              {\n' +
-                        '                  Log.Error($"update record '+ Screen +' fail={JsonConvert.SerializeObject(request)}");\n' +
-                        '                  continue;\n' +
-                        '              }\n' +
-                        '\n' +
-                        '              await _logManager.LogAdmin(appUser.Id, "update data '+ Screen +'","");\n' +
-                        '          }\n' +
-                        '     }\n' +
-                        '}\n';
+                      'using System.Collections.Generic;\n' +
+                      'using System.Threading.Tasks;\n' +
+                      'using System.Linq;\n' +
+                      'using app.Core.Models;\n' +
+                      'using app.Core.Utils;\n' +
+                      '\n' +
+                      'namespace ' + ProjectName +'.Service.Implement\n' +
+                      '{\n' +
+                      '     public class ' + Screen + 'Service : I'+ Screen + 'Service\n' +
+                      '     {\n' +
+                      '          private readonly LogManager _logManager;\n' +
+                      '\n' +
+                      '          public ' + Screen + 'Service(LogManager logManager)\n' +
+                      '          {\n' +
+                      '              _logManager = logManager;\n' +
+                      '          }\n' +
+                      '\n' +
+                      '          public async Task<List<'+ Screen +'Dto>> Get' + Screen + 's(AppUser appUser)\n' +
+                      '          {\n' +
+                      '              await using var dbConnection = new MySqlConnection(Configurations.DbConnectionString);\n' +
+                      '              await dbConnection.OpenAsync();\n' +
+                      '\n' +
+                      '              var '+ Screen +'Dtos = (await dbConnection.QueryAsync<'+ Screen +'Dto>(\n' +
+                      '               @"SELECT * FROM '+ Screen +'s", new {})).ToList();\n' +
+                      '\n' +
+                      '               return '+ Screen +'Dtos;\n' +
+                      '          }\n' +
+                      '\n' +
+                      '          public async Task<TableResult<'+ Screen +'Dto>> AdmGet'+ Screen +'s(TableRequest request)\n' +
+                      '          {\n' +
+                      '              var builder = new SqlBuilder();\n' +
+                      '\n' +
+                      '              var (counter, selector) = builder.Build(typeof('+ Screen +'Dto), "'+ Screen +'s", request,\n' +
+                      '              new Dictionary<string, string>\n' +
+                      '              {\n' +
+                      '                 {"Id", "long"}\n' +
+                      '              }, null,\n' +
+                      '              new[] { "Id" });\n' +
+                      '\n' +
+                      '              await using var dbConnection = new MySqlConnection(Configurations.DbConnectionString);\n' +
+                      '              await dbConnection.OpenAsync();\n' +
+                      '\n' +
+                      '              var total = await dbConnection.ExecuteScalarAsync<int>(\n' +
+                      '                  counter.RawSql, counter.Parameters);\n' +
+                      '\n' +
+                      '              var items = (await dbConnection.QueryAsync<'+ Screen +'Dto>(\n' +
+                      '                  selector.RawSql, selector.Parameters)).ToList();\n' +
+                      '\n' +
+                      '              return new TableResult<'+ Screen +'Dto>(items, total, request);\n' +
+                      '          }\n' +
+                      '\n' +
+                      '          public async AdmImport' + Screen + 's(List<'+ Screen +'Dto> requests, AppUser appUser)\n' +
+                      '          {\n' +
+                      '              foreach (var request in requests)\n' +
+                      '              {\n' +
+                      '                  await AdmCreate' + Screen + '(request, appUser)\n' +
+                      '              }\n' +
+                      '          }\n' +
+                      '\n' +
+                      '          public async AdmCreate' + Screen + '('+ Screen +'Dto request, AppUser appUser)\n' +
+                      '          {\n' +
+                      '              await using var dbConnection = new MySqlConnection(Configurations.DbConnectionString);\n' +
+                      '              await dbConnection.OpenAsync();\n' +
+                      '\n' +
+                      '              request.CreatedTime = AppUtils.NowMilis();\n' +
+                      '              var exec = await dbConnection.ExecuteAsync(\n' +
+                      '                  @"INSERT INTO '+ Screen +'s(`CreatedTime`)\n' +
+                      '                  VALUES(@CreatedTime)", request);\n' +
+                      '              if (exec != 1)\n' +
+                      '              {\n' +
+                      '                  Log.Error($"create record '+ Screen +' fail={JsonConvert.SerializeObject(request)}");\n' +
+                      '                  continue;\n' +
+                      '              }\n' +
+                      '\n' +
+                      '              await _logManager.LogAdmin(appUser.Id, "create data '+ Screen +'","");\n' +
+                      '          }\n' +
+                      '\n' +
+                      '          public async AdmUpdate' + Screen + '('+ Screen +'Dto request, AppUser appUser)\n' +
+                      '          {\n' +
+                      '              await using var dbConnection = new MySqlConnection(Configurations.DbConnectionString);\n' +
+                      '              await dbConnection.OpenAsync();\n' +
+                      '\n' +
+                      '              request.UpdatedTime = AppUtils.NowMilis();\n' +
+                      '              var exec = await dbConnection.ExecuteAsync(\n' +
+                      '                  @"UPDATE '+ Screen +'s()\n' +
+                      '                  SET UpdatedTime = @UpdatedTime WHERE Id = @Id", request);\n' +
+                      '              if (exec != 1)\n' +
+                      '              {\n' +
+                      '                  Log.Error($"update record '+ Screen +' fail={JsonConvert.SerializeObject(request)}");\n' +
+                      '                  continue;\n' +
+                      '              }\n' +
+                      '\n' +
+                      '              await _logManager.LogAdmin(appUser.Id, "update data '+ Screen +'","");\n' +
+                      '          }\n' +
+                      '     }\n' +
+                      '}\n';
     return strService;
 }
 
