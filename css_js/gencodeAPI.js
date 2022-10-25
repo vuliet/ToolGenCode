@@ -56,7 +56,7 @@ function GenCode_Controller(){
                         'using Microsoft.AspNetCore.Mvc;\n' +
                         'using stepwatch.Api.Controllers.Base;\n' +
                         'using stepwatch.Api.Infrastructure;\n' +
-                        'using stepwatch.Api.Services.Interface;\n' +
+                        'using stepwatch.Api.Service.Interface;\n' +
                         '\n' +
                         'namespace ' + ProjectName +'.Controllers\n' +
                         '{\n' +
@@ -73,7 +73,7 @@ function GenCode_Controller(){
                         '         [HttpGet("list")]\n' +
                         '         public async Task<OkResponse> Get' + Screen + 's()\n' +
                         '         {\n' +
-                        '           ' + ' var result = _' + toLowerCaseScreen + 'Service.Get' + Screen + 's(CurrentUser());\n' +
+                        '           ' + ' var result = await _' + toLowerCaseScreen + 'Service.Get' + Screen + 's(CurrentUser());\n' +
                         '            return new OkResponse();\n' +
                         '         }\n' +
                         '    }\n' +
@@ -88,6 +88,7 @@ function GenCode_IService() {
                       'using System.Collections.Generic;\n' +
                       'using app.Core.Models;\n' +
                       'using app.Core.Utils;\n' +
+                      'using ' + ProjectName +'.Models.'+ Screen +';\n' +
                       '\n' +
                       'namespace ' + ProjectName +'.Service.Interface\n' +
                       '{\n'+
@@ -110,6 +111,15 @@ function GenCode_Service(){
                       'using System.Linq;\n' +
                       'using app.Core.Models;\n' +
                       'using app.Core.Utils;\n' +
+                      'using app.Core.Extensions;\n' +
+                      'using Serilog;\n' +
+                      'using Newtonsoft.Json;\n' +
+                      'using MySqlConnector;\n' +
+                      'using Dapper;\n' +
+                      'using stepwatch.Api.Infrastructure;\n' +
+                      'using ' + ProjectName +'.Models.'+ Screen +';\n' +
+                      'using ' + ProjectName +'.Service.Interface;\n' +
+                      'using ' + ProjectName +'.Service.SubService;\n' +
                       '\n' +
                       'namespace ' + ProjectName +'.Service.Implement\n' +
                       '{\n' +
@@ -127,10 +137,10 @@ function GenCode_Service(){
                       '              await using var dbConnection = new MySqlConnection(Configurations.DbConnectionString);\n' +
                       '              await dbConnection.OpenAsync();\n' +
                       '\n' +
-                      '              var '+ Screen +'Dtos = (await dbConnection.QueryAsync<'+ Screen +'Dto>(\n' +
+                      '              var '+ toLowerCaseScreen +'Dtos = (await dbConnection.QueryAsync<'+ Screen +'Dto>(\n' +
                       '               @"SELECT * FROM '+ Screen +'s", new {})).ToList();\n' +
                       '\n' +
-                      '               return '+ Screen +'Dtos;\n' +
+                      '              return '+ Screen +'Dtos;\n' +
                       '          }\n' +
                       '\n' +
                       '          public async Task<TableResult<'+ Screen +'Dto>> AdmGet'+ Screen +'s(TableRequest request)\n' +
@@ -156,7 +166,7 @@ function GenCode_Service(){
                       '              return new TableResult<'+ Screen +'Dto>(items, total, request);\n' +
                       '          }\n' +
                       '\n' +
-                      '          public async AdmImport' + Screen + 's(List<'+ Screen +'Dto> requests, AppUser appUser)\n' +
+                      '          public async Task AdmImport' + Screen + 's(List<'+ Screen +'Dto> requests, AppUser appUser)\n' +
                       '          {\n' +
                       '              foreach (var request in requests)\n' +
                       '              {\n' +
@@ -164,7 +174,7 @@ function GenCode_Service(){
                       '              }\n' +
                       '          }\n' +
                       '\n' +
-                      '          public async AdmCreate' + Screen + '('+ Screen +'Dto request, AppUser appUser)\n' +
+                      '          public async Task AdmCreate' + Screen + '('+ Screen +'Dto request, AppUser appUser)\n' +
                       '          {\n' +
                       '              await using var dbConnection = new MySqlConnection(Configurations.DbConnectionString);\n' +
                       '              await dbConnection.OpenAsync();\n' +
@@ -182,7 +192,7 @@ function GenCode_Service(){
                       '              await _logManager.LogAdmin(appUser.Id, "create data '+ Screen +'","");\n' +
                       '          }\n' +
                       '\n' +
-                      '          public async AdmUpdate' + Screen + '('+ Screen +'Dto request, AppUser appUser)\n' +
+                      '          public async Task AdmUpdate' + Screen + '('+ Screen +'Dto request, AppUser appUser)\n' +
                       '          {\n' +
                       '              await using var dbConnection = new MySqlConnection(Configurations.DbConnectionString);\n' +
                       '              await dbConnection.OpenAsync();\n' +
