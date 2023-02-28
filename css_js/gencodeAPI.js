@@ -184,10 +184,7 @@ function GenCode_Service(){
                       '                  @"INSERT INTO '+ Screen +'s(`CreatedTime`)\n' +
                       '                  VALUES(@CreatedTime)", request);\n' +
                       '              if (exec != 1)\n' +
-                      '              {\n' +
                       '                  Log.Error($"create record '+ Screen +' fail={JsonConvert.SerializeObject(request)}");\n' +
-                      '                  continue;\n' +
-                      '              }\n' +
                       '\n' +
                       '              await _logManager.LogAdmin(appUser.Id, "create data '+ Screen +'","");\n' +
                       '          }\n' +
@@ -199,13 +196,10 @@ function GenCode_Service(){
                       '\n' +
                       '              request.UpdatedTime = AppUtils.NowMilis();\n' +
                       '              var exec = await dbConnection.ExecuteAsync(\n' +
-                      '                  @"UPDATE '+ Screen +'s()\n' +
+                      '                  @"UPDATE '+ Screen +'s\n' +
                       '                  SET UpdatedTime = @UpdatedTime WHERE Id = @Id", request);\n' +
                       '              if (exec != 1)\n' +
-                      '              {\n' +
                       '                  Log.Error($"update record '+ Screen +' fail={JsonConvert.SerializeObject(request)}");\n' +
-                      '                  continue;\n' +
-                      '              }\n' +
                       '\n' +
                       '              await _logManager.LogAdmin(appUser.Id, "update data '+ Screen +'","");\n' +
                       '          }\n' +
