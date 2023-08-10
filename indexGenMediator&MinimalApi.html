@@ -1,0 +1,84 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>TOOL GEN CODE TỰ ĐỘNG MEDIATOR & MINIMAL PARTEN v1.0</title>
+    <link rel="stylesheet" href="css_js/bootstrap.min.css">
+    <script src="css_js/jquery.min.js"></script>
+    <script src="css_js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="css_js/vs.min.css">
+    <script src="css_js/highlight.min.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script>
+</head>
+
+<body>
+    <div class="panel panel-default">
+        <div class="panel-heading">TOOL GEN CODE TỰ ĐỘNG MEDIATOR & MINIMAL PARTEN v1.0</div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label>Nhập tên project</label>
+                <input id="ProjectName" style="width:100%;" value="Sprint"/> 
+            </div>
+            <div class="form-group">
+                <label>Nhập namespace</label>
+                <input id="NameSpace" style="width:100%;" value="Sprint.Modules.Balance"/> 
+            </div>
+
+            <div class="form-group">
+                <label>Tên Module</label>
+                <input id="ModuleName" style="width:100%;" value="Balance"/> 
+            </div>
+
+            <div class="form-group">
+                <label>Nhập tên màn hình</label>
+                <input id="ScreenName" style="width:100%;" value="Swap"/> 
+            </div>
+
+            <!-- <div class="form-group">
+                <label>Api trang admin</label>
+                <select id="adminApi" name="cbbIsAdminApi">
+                    <option value="false">False</option>
+                    <option value="true">True</option>
+                </select>
+            </div> -->
+
+            <button class="btn btn-primary" onclick="Preview()">Xem Trước</button>
+            <button class="btn btn-info" onclick="DownloadAll()">Download về</button>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Kết quả sau khi Gen Code</div>
+        <div class="panel-body">
+            <label>GenCode_ConstantsHelper</label>
+            <pre><code class="csharp" id="resultConstantsHelper"></code></pre>
+
+            <label>GenCode_CreateSettingCommand</label>
+            <pre><code class="csharp" id="resultCreateSettingCommand"></code></pre>
+
+            <label>GenCode_UpdateSettingCommand</label>
+            <pre><code class="csharp" id="resultUpdateSettingCommand"></code></pre>
+
+            <label>GenCode_GetSettingCommand</label>
+            <pre><code class="csharp" id="resultGetSettingCommand"></code></pre>
+
+            <label>GenCode_AdminEndpoint</label>
+            <pre><code class="csharp" id="resultAdminEndPoint"></code></pre>
+
+            <label>GenCode_UserEndpoint</label>
+            <pre><code class="csharp" id="resultUserEndPoint"></code></pre>
+
+            <label>GenCode_CreateSettingHandler</label>
+            <pre><code class="csharp" id="resultCreateSettingHandler"></code></pre>
+            
+            <label>GenCode_UpdateSettingHandler</label>
+            <pre><code class="csharp" id="resultUpdateSettingHandler"></code></pre>
+        </div>
+    </div>
+
+    <script src="css_js/gencodeMediator&MinimalApi.js"></script>
+</body>
+</html>
